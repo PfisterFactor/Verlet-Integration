@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace VerletIntegration
+namespace VerletIntegration.Constraints
 {
     public class RopeConstraint : PointToPointConstraint
     {

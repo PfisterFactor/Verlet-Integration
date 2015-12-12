@@ -53,6 +53,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Input.cs" />
+    <Compile Include="Shapes\Rectangle.cs" />
     <Compile Include="Utility\ExtensionClasses.cs" />
     <Compile Include="Constraints\BoundsConstraint.cs" />
     <Compile Include="Constraints\Constraint.cs" />

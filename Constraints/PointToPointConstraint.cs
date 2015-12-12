@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using SFML.Graphics;
 using SFML.System;
 
-namespace VerletIntegration
+namespace VerletIntegration.Constraints
 {
     public abstract class PointToPointConstraint : Constraint
     {

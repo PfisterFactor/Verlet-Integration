@@ -7,7 +7,7 @@ using SFML;
 using SFML.Graphics;
 using SFML.System;
 
-namespace VerletIntegration
+namespace VerletIntegration.Constraints
 {
     class RodConstraint : PointToPointConstraint
     {

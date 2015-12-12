@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using SFML.Graphics;
 
-namespace VerletIntegration
+namespace VerletIntegration.Constraints
 {
     public abstract class Constraint : DrawableObject
     {

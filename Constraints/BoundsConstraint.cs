@@ -5,7 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using SFML.Graphics;
 using SFML.System;
-namespace VerletIntegration
+using VerletIntegration.Utility;
+namespace VerletIntegration.Constraints
 {
     public class BoundsConstraint : Constraint
     {

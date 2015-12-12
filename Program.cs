@@ -7,6 +7,9 @@ using SFML;
 using SFML.System;
 using SFML.Graphics;
 using SFML.Window;
+using VerletIntegration.Shapes;
+using VerletIntegration.Constraints;
+using VerletIntegration.Utility;
 namespace VerletIntegration
 {
     class Program
@@ -27,25 +30,12 @@ namespace VerletIntegration
         public static int timesteps;
         public const int CONSTRAINTACCURACY = 3;
         public static bool gameRunning = true;
+
+        static Rectangle Test;
+        static Rectangle Test2;
         
 
-        public static void onWindowClose (object sender, EventArgs e)
-        {
-            gameRunning = false;
-        }
-        public static void onMousePressed (object sender, EventArgs e)
-        {
-            mouseClick = true;
-            
-        }
-        public static void onMouseRelease (object sender, EventArgs e)
-        {
-            mouseClick = false;
-        }
-        public static void onMouseMove (object sender, MouseMoveEventArgs e)
-        {
-                mousePos = new Vector2f(e.X, e.Y);
-        }
+
         static void Draw()
         {
             foreach (DrawableObject da in DrawableObject.activeObjects)
@@ -53,7 +43,17 @@ namespace VerletIntegration
                 
                 da.draw(_window);
             }
+
             _window.Display();
+        }
+        static void moveTowardsMouse(PointMass point)
+        {
+            
+            
+            double clampedMouseX = mousePos.X.Clamp(windowBounds.Size.X, windowBounds.Size.X + windowBounds.Size.Width);
+            double clampedMouseY = mousePos.Y.Clamp(windowBounds.Size.Y, windowBounds.Size.Y + windowBounds.Size.Height);
+            point.Acceleration.X += (float)clampedMouseX - point.Position.X;
+            point.Acceleration.Y += (float)clampedMouseY - point.Position.Y;
         }
         static void Update()
         {
@@ -69,14 +69,23 @@ namespace VerletIntegration
             _window.Clear(Color.White);
             _window.DispatchEvents();
 
+
+
+
             for (int i = 0; i < timesteps; i++)
             {
+                
                 if (mouseClick)
                 {
-                    PointMass.activeObjects[0].Position.X = mousePos.X.Clamp(windowBounds.Size.X, windowBounds.Size.X + windowBounds.Size.Width);
-                    PointMass.activeObjects[0].Position.Y = mousePos.Y.Clamp(windowBounds.Size.Y, windowBounds.Size.Y + windowBounds.Size.Height);
-                    PointMass.activeObjects[0].LastPosition = PointMass.activeObjects[0].Position;
+                    Random a = new Random();
+                    foreach (PointMass p in PointMass.activeObjects)
+                    {
+                        if (a.Next(0,2) == 1) continue;
+                        moveTowardsMouse(p);
+                    }
+                    
                 }
+
 
                 for (int iteration = 0; iteration < CONSTRAINTACCURACY; iteration++)
                 {
@@ -85,6 +94,7 @@ namespace VerletIntegration
                         C.solve();
                     }
                 }
+
                 foreach (PointMass P in PointMass.activeObjects)
                 {
                     P.update(delta);
@@ -95,26 +105,34 @@ namespace VerletIntegration
 
         }
 
-        //TODO Implement shape classes
+        //TODO Implement shape classes (Rectangle done)
         static void Initialize()
         {
             deltaClock = new Clock();
 
 
-            _window.MouseButtonPressed += onMousePressed;
-            _window.MouseButtonReleased += onMouseRelease;
-            _window.MouseMoved += onMouseMove;
-            _window.Closed += onWindowClose;
+            _window.MouseButtonPressed += Input.onMousePressed;
+            _window.MouseButtonReleased += Input.onMouseRelease;
+            _window.MouseMoved += Input.onMouseMove;
+            _window.Closed += Input.onWindowClose;
 
             deltaClock.Restart();
 
             windowBounds = new BoundsConstraint(new Rect(0, 0, 800, 600),0.3f);
 
-            PointMass TestOne = new PointMass(new Vector2f(0, 400));
-            PointMass TestTwo = new PointMass(new Vector2f(100, 400));
-            PointMass TestThree = new PointMass(new Vector2f(0, 0));
-            PointMass TestFour = new PointMass(new Vector2f(100, 0));
+            Vector2f[] rect = { new Vector2f(25, 25), new Vector2f(125, 25), new Vector2f(125,125), new Vector2f(25,125)};
+            Test = new Rectangle(rect.Select<Vector2f,PointMass>(x => new PointMass(x)).ToArray());
+            Test2 = new Rectangle(rect.Select<Vector2f, PointMass>(x => new PointMass(x)).ToArray());
+
+            //TODO Attempt multithreading constraint solving
+
             /*
+            PointMass TestOne = new PointMass(new Vector2f(25, 25));
+            PointMass TestTwo = new PointMass(new Vector2f(125, 25));
+            PointMass TestThree = new PointMass(new Vector2f(125, 125));
+            PointMass TestFour = new PointMass(new Vector2f(25, 125));
+
+
             PointMass TestThree = new PointMass(new Vector2f(225, 200));
 
             PointMass TestFour = new PointMass(new Vector2f(150, 400));
@@ -129,16 +147,19 @@ namespace VerletIntegration
             RodConstraint TestRod5 = new RodConstraint(TestFive, TestSix, 50);
             RodConstraint TestRod6 = new RodConstraint(TestSix, TestFour, 50);
             RodConstraint TestRod7 = new RodConstraint(TestSeven, TestOne, 50);
-            */
+            
+
             RodConstraint TestRod = new RodConstraint(TestOne, TestTwo, 100);
             RodConstraint TestRod2 = new RodConstraint(TestTwo, TestThree, 100);
             RodConstraint TestRod3 = new RodConstraint(TestThree, TestFour, 100);
             RodConstraint TestRod4 = new RodConstraint(TestFour, TestOne, 100);
-            RodConstraint TestRod5 = new RodConstraint(TestOne, TestThree, 141);
-            RodConstraint TestRod6 = new RodConstraint(TestFour, TestTwo, 141);
+            double hypotenuse = Math.Sqrt((100 * 100) * 2);
+            RodConstraint TestRod5 = new RodConstraint(TestOne, TestThree, hypotenuse);
+            RodConstraint TestRod6 = new RodConstraint(TestFour, TestTwo, hypotenuse);
+            */
 
             Constraint.drawAll(true);
-            PointMass.drawAll(true);
+            //PointMass.drawAll(true);
 
 
 
@@ -151,8 +172,10 @@ namespace VerletIntegration
             Initialize();
             while (gameRunning)
             {
+                
                 Update();
                 Draw();
+
             }
 
             _window.Close();
