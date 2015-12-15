@@ -21,7 +21,12 @@ namespace VerletIntegration.Shapes
             get;
             protected set;
         }
+
         int Vertices => Points.Length;
+
+        public double Width;
+        public double Height;
+
         public void moveTo(Vector2f pos)
         {
             foreach (PointMass P in Points)
@@ -35,7 +40,7 @@ namespace VerletIntegration.Shapes
         {
             return intersecting(point.Position); 
         }
-        //wat
+        //Uses the Ray casting algorithm to determine if a point lies within the points given
         public bool intersecting(Vector2f point)
         {
             bool isInside = false;
@@ -80,16 +85,21 @@ namespace VerletIntegration.Shapes
             {
                 double[] projectedThis = Points.Select(x => x.Position.DotProduct(axis)).ToArray();
                 double[] projectedOther = other.Points.Select(x => x.Position.DotProduct(axis)).ToArray();
+                
 
                 double thisMin = projectedThis.Min();
                 double thisMax = projectedThis.Max();
                 double otherMin = projectedOther.Min();
                 double otherMax = projectedOther.Max();
-                //VertexArray a = new VertexArray(PrimitiveType.LinesStrip);
-                //a.Append(new Vertex(axis.Multiply(-1000),Color.Red));
-                //a.Append(new Vertex(new Vector2f(400,300), Color.Red));
-                //a.Append(new Vertex(axis.Multiply(1000), Color.Red));
-                //w.Draw(a);
+                VertexArray a = new VertexArray(PrimitiveType.LinesStrip);
+                a.Append(new Vertex(axis.Multiply(-1000),Color.Red));
+                a.Append(new Vertex(new Vector2f(400,300), Color.Red));
+                a.Append(new Vertex(axis.Multiply(1000), Color.Red));
+                w.Draw(a);
+                VertexArray b = new VertexArray(PrimitiveType.Lines);
+                b.Append(new Vertex(axis.Multiply((float)thisMin), Color.Blue));
+                b.Append(new Vertex(new Vector2f(0, 0)));
+                w.Draw(b);
                 
                 if (otherMin > thisMax || thisMin > otherMax)
                     return false;
@@ -97,6 +107,19 @@ namespace VerletIntegration.Shapes
             }
             return true;
 
+        }
+        protected Shape(PointMass[] points)
+        {
+            Points = points;
+            List<Constraint> constraintList = new List<Constraint>();
+            for (int i = 0; i<points.Length;i++)
+            {
+                if (i != points.Length - 1)
+                    constraintList.Add(new RodConstraint(Points[i], Points[i + 1]));
+                else
+                    constraintList.Add(new RodConstraint(Points[i], Points[0]));
+            }
+            Constraints = constraintList.ToArray();
         }
     }
 }

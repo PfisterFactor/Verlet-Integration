@@ -32,7 +32,7 @@ namespace VerletIntegration
         public static bool gameRunning = true;
 
         static Rectangle Test;
-        static Rectangle Test2;
+        static Triangle Test2;
         
 
 
@@ -82,11 +82,12 @@ namespace VerletIntegration
                     {
                         if (a.Next(0,2) == 1) continue;
                         moveTowardsMouse(p);
+                        
                     }
                     
                 }
 
-
+                Console.WriteLine(Test.intersecting(Test2,_window));
                 for (int iteration = 0; iteration < CONSTRAINTACCURACY; iteration++)
                 {
                     foreach (Constraint C in Constraint.activeObjects)
@@ -121,8 +122,10 @@ namespace VerletIntegration
             windowBounds = new BoundsConstraint(new Rect(0, 0, 800, 600),0.3f);
 
             Vector2f[] rect = { new Vector2f(25, 25), new Vector2f(125, 25), new Vector2f(125,125), new Vector2f(25,125)};
-            Test = new Rectangle(rect.Select<Vector2f,PointMass>(x => new PointMass(x)).ToArray());
-            Test2 = new Rectangle(rect.Select<Vector2f, PointMass>(x => new PointMass(x)).ToArray());
+            Vector2f[] triangle = { new Vector2f(25, 25), new Vector2f(25, 125), new Vector2f(125, 125) };
+            Test = new Rectangle(rect.Select(x => new PointMass(x)).ToArray());
+            Test2 = new Triangle(triangle.Select(x => new PointMass(x)).ToArray());
+            
 
             //TODO Attempt multithreading constraint solving
 
