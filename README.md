@@ -1,7 +1,7 @@
 # Verlet-Integration
 A small vector physics experiment implementing Loup Verlet's method of integrating Newton's equations of motion.
 
-#Dependencies
+# Dependencies
 [SFML.Net](http://www.sfml-dev.org/download/sfml.net/)
 - SFML.Net System 2.2
 - SFML.Net Graphics 2.2
@@ -12,10 +12,7 @@ A small vector physics experiment implementing Loup Verlet's method of integrati
 - CSFML Graphics 2.2
 - CSFML Window 2.2
 
-#Download
-No download link will be provided on this readme until I feel it is complete enough to be released
-
-#Set up
+# Set up
 1. Import VerletIntegration.sln
 2. Under References in the Solution Explorer, right click and choose "Add Reference"
 3. Click the "Browse" sidebar and then under that click the "Browse" button
